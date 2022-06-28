@@ -11,9 +11,37 @@ library(tidyverse)
 library(rvest)
 ```
 
-Link: https://en.wikipedia.org/wiki/List_of_members_of_the_Baseball_Hall_of_Fame
 
-```{r}
+```{r wiki_get, echo = FALSE}
+hof_url <- "https://en.wikipedia.org/wiki/List_of_members_of_the_Baseball_Hall_of_Fame"
 
+table_tags <- hof_url |> 
+  read_html() |> 
+  html_elements("table") |> 
+  html_table()
 ```
+
+
+```{r table, echo = FALSE}
+#clean up data below
+graph_data <- table_tags[[3]] |> 
+  rename(year = Year, name = Name) |> 
+  mutate(year = as.character(year)) |> 
+  mutate(year = if_else(nchar(year) > 4, substr(year, 1, 4), year)) |> 
+  mutate(year = parse_number(year)) |>
+  group_by(year) |> 
+  summarize(num_of_inductees = n())
+```
+
+```{r, echo = FALSE}
+graph_data |> 
+  ggplot(aes(x = year))  +
+    geom_bar() + theme_classic() +
+  labs(title = "Baseball Hall of Fame Inductions", 
+       subtitle = "Spike in 2006 associated with Negro League inclusion", 
+       x = "year", 
+       y = "Number of Inductees", 
+       caption = "Data: Wikipedia")
+```
+
 
