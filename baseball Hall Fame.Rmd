@@ -27,10 +27,8 @@ table_tags <- hof_url |>
 graph_data <- table_tags[[3]] |> 
   rename(year = Year, name = Name) |> 
   mutate(year = as.character(year)) |> 
-  mutate(year = if_else(nchar(year) > 4, substr(year, 1, 4), year)) |> 
-  mutate(year = parse_number(year)) |>
-  group_by(year) |> 
-  summarize(num_of_inductees = n())
+  mutate(year = ifelse(nchar(year) > 4, substr(year, 1, 4), year)) |> 
+  mutate(year = parse_number(year))
 ```
 
 ```{r, echo = FALSE}
@@ -39,7 +37,7 @@ graph_data |>
     geom_bar() + theme_classic() +
   labs(title = "Baseball Hall of Fame Inductions", 
        subtitle = "Spike in 2006 associated with Negro League inclusion", 
-       x = "year", 
+       x = "Year", 
        y = "Number of Inductees", 
        caption = "Data: Wikipedia")
 ```
